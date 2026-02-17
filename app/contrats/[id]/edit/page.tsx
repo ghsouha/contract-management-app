@@ -5,15 +5,17 @@ import { Header } from '@/components/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { Upload, X } from 'lucide-react';
 import { useContrats } from '@/contexts/contracts-context';
 import { useRouter } from 'next/navigation';
 
-export default function AddContractPage() {
-  const { addContrat } = useContrats();
+export default function EditContractPage({ params }: { params: { id: string } }) {
+  const { getContratById, updateContrat } = useContrats();
   const router = useRouter();
-  
+  const contractId = parseInt(params.id);
+  const existingContrat = getContratById(contractId);
+
   const [formData, setFormData] = useState({
     titre: '',
     client: '',
@@ -25,6 +27,20 @@ export default function AddContractPage() {
   });
 
   const [file, setFile] = useState<File | null>(null);
+
+  useEffect(() => {
+    if (existingContrat) {
+      setFormData({
+        titre: existingContrat.titre || '',
+        client: existingContrat.client,
+        type: existingContrat.type,
+        debut: existingContrat.debut,
+        fin: existingContrat.fin,
+        montant: existingContrat.montant.replace(' €', ''),
+        description: existingContrat.description || '',
+      });
+    }
+  }, [existingContrat]);
 
   const handleChange = (
     e: React.ChangeEvent<
@@ -43,33 +59,47 @@ export default function AddContractPage() {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    
-    addContrat({
+
+    updateContrat(contractId, {
+      titre: formData.titre,
       client: formData.client,
       type: formData.type,
       debut: formData.debut,
       fin: formData.fin,
-      montant: formData.montant,
-      titre: formData.titre,
+      montant: `${formData.montant} €`,
       description: formData.description,
     });
 
     router.push('/contrats');
   };
 
+  if (!existingContrat) {
+    return (
+      <>
+        <Sidebar />
+        <main className="flex-1 overflow-auto bg-background">
+          <Header title="Modifier un Contrat" />
+          <div className="p-8">
+            <p className="text-muted-foreground">Contrat non trouvé</p>
+          </div>
+        </main>
+      </>
+    );
+  }
+
   return (
     <>
       <Sidebar />
       <main className="flex-1 overflow-auto bg-background">
-        <Header title="Ajouter un Contrat" />
+        <Header title="Modifier un Contrat" />
 
         <div className="p-8">
           <div className="max-w-2xl mx-auto">
             <Card>
               <CardHeader>
-                <CardTitle>Créer un Nouveau Contrat</CardTitle>
+                <CardTitle>Modifier le Contrat</CardTitle>
                 <p className="text-sm text-muted-foreground mt-2">
-                  Remplissez tous les champs pour créer un nouveau contrat
+                  Mettez à jour les informations du contrat
                 </p>
               </CardHeader>
               <CardContent>
@@ -230,7 +260,7 @@ export default function AddContractPage() {
                       type="submit"
                       className="flex-1 bg-primary hover:bg-primary/90 text-primary-foreground"
                     >
-                      Enregistrer le Contrat
+                      Enregistrer les Modifications
                     </Button>
                     <Button
                       type="button"

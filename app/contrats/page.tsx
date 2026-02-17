@@ -8,8 +8,9 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Edit2, Eye, Trash2, Plus, Filter, X, Send } from 'lucide-react';
 import Link from 'next/link';
+import { useContrats } from '@/contexts/contracts-context';
 
-const contrats = [
+const staticContrats = [
   {
     id: 1,
     numero: 'CTR-2024-001',
@@ -86,7 +87,8 @@ const sampleMessages = [
 ];
 
 export default function ContratsPage() {
-  const [selectedContrat, setSelectedContrat] = useState<(typeof contrats)[0] | null>(null);
+  const { contrats, deleteContrat } = useContrats();
+  const [selectedContrat, setSelectedContrat] = useState<typeof contrats[0] | null>(null);
   const [messages, setMessages] = useState(sampleMessages);
   const [inputValue, setInputValue] = useState('');
 
@@ -112,6 +114,13 @@ export default function ContratsPage() {
       }, 500);
 
       setInputValue('');
+    }
+  };
+
+  const handleDeleteContrat = (id: number) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?')) {
+      deleteContrat(id);
+      setSelectedContrat(null);
     }
   };
 
@@ -214,17 +223,20 @@ export default function ContratsPage() {
                             </td>
                             <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
                               <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="hover:bg-primary/10 hover:text-primary"
-                                >
-                                  <Edit2 size={16} />
-                                </Button>
+                                <Link href={`/contrats/${contrat.id}/edit`}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="hover:bg-primary/10 hover:text-primary"
+                                  >
+                                    <Edit2 size={16} />
+                                  </Button>
+                                </Link>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="hover:bg-destructive/10 hover:text-destructive"
+                                  onClick={() => handleDeleteContrat(contrat.id)}
                                 >
                                   <Trash2 size={16} />
                                 </Button>
