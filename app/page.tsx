@@ -4,28 +4,7 @@ import { Sidebar } from '@/components/sidebar';
 import { Header } from '@/components/header';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
-import {
-  LineChart,
-  Line,
-  BarChart,
-  Bar,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from 'recharts';
 import { FileText, AlertCircle, TrendingUp, Clock } from 'lucide-react';
-
-const chartData = [
-  { month: 'Jan', total: 24, actifs: 20, expirés: 2, en_attente: 2 },
-  { month: 'Fév', total: 28, actifs: 23, expirés: 2, en_attente: 3 },
-  { month: 'Mar', total: 32, actifs: 26, expirés: 3, en_attente: 3 },
-  { month: 'Avr', total: 35, actifs: 28, expirés: 4, en_attente: 3 },
-  { month: 'Mai', total: 38, actifs: 30, expirés: 5, en_attente: 3 },
-  { month: 'Juin', total: 42, actifs: 33, expirés: 5, en_attente: 4 },
-];
 
 const alertes = [
   { id: 1, contrat: 'Contrat A-2024-001', client: 'Client ABC', expiration: '5 jours', priorite: 'haute' },
@@ -84,49 +63,6 @@ export default function Dashboard() {
               <CardContent>
                 <div className="text-3xl font-bold">4</div>
                 <p className="text-xs text-muted-foreground mt-1">Signature</p>
-              </CardContent>
-            </Card>
-          </div>
-
-          {/* Charts Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 mb-8">
-            {/* Line Chart - Evolution */}
-            <Card className="lg:col-span-2">
-              <CardHeader>
-                <CardTitle>Évolution des Contrats</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <LineChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Legend />
-                    <Line type="monotone" dataKey="total" stroke="var(--chart-1)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="actifs" stroke="var(--chart-2)" strokeWidth={2} />
-                    <Line type="monotone" dataKey="expirés" stroke="var(--chart-3)" strokeWidth={2} />
-                  </LineChart>
-                </ResponsiveContainer>
-              </CardContent>
-            </Card>
-
-            {/* Bar Chart - Distribution */}
-            <Card>
-              <CardHeader>
-                <CardTitle>Distribution</CardTitle>
-              </CardHeader>
-              <CardContent>
-                <ResponsiveContainer width="100%" height={300}>
-                  <BarChart data={chartData}>
-                    <CartesianGrid strokeDasharray="3 3" />
-                    <XAxis dataKey="month" />
-                    <YAxis />
-                    <Tooltip />
-                    <Bar dataKey="actifs" fill="var(--chart-2)" />
-                    <Bar dataKey="expirés" fill="var(--chart-3)" />
-                  </BarChart>
-                </ResponsiveContainer>
               </CardContent>
             </Card>
           </div>
