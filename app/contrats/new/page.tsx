@@ -166,7 +166,8 @@ export default function AddContractPage() {
                     </div>
                   </div>
 
-                  {/* Montant */}
+                  {/* Montant et Devise */}
+                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-foreground">
                         Montant
@@ -181,10 +182,6 @@ export default function AddContractPage() {
                         required
                       />
                     </div>
-                  </div>
-
-                  {/* Montant et Devise */}
-                  <div className="grid grid-cols-2 gap-4">
                     <div>
                       <label className="text-sm font-medium text-foreground">
                         Devise
@@ -200,7 +197,6 @@ export default function AddContractPage() {
                         <option value="GBP">GBP</option>
                       </select>
                     </div>
-                    <div />
                   </div>
 
                   {/* Description */}
