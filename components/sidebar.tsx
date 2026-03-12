@@ -6,8 +6,6 @@ import {
   LayoutDashboard,
   FileText,
   Users,
-  MessageSquare,
-  Bell,
   Settings,
   LogOut,
 } from 'lucide-react';
@@ -20,8 +18,6 @@ export function Sidebar() {
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/contrats', label: 'Contrats', icon: FileText },
     { href: '/clients', label: 'Clients', icon: Users },
-    { href: '/chatbot', label: 'Chatbot IA', icon: MessageSquare },
-    { href: '/notifications', label: 'Notifications', icon: Bell },
     { href: '/settings', label: 'Paramètres', icon: Settings },
   ];
 
@@ -56,13 +52,7 @@ export function Sidebar() {
         })}
       </nav>
 
-      {/* User Section */}
-      <div className="p-4 border-t border-sidebar-border">
-        <button className="w-full flex items-center gap-3 px-4 py-3 rounded-lg text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground transition-colors">
-          <LogOut size={20} />
-          <span className="text-sm font-medium">Déconnexion</span>
-        </button>
-      </div>
+
     </aside>
   );
 }

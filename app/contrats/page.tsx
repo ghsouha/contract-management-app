@@ -180,8 +180,8 @@ export default function ContratsPage() {
           ) : (
             // Split View
             <div className="flex h-full gap-0">
-              {/* Left Panel - Contract Details */}
-              <div className="flex-1 overflow-auto p-8 border-r border-border">
+              {/* Left Panel - Contract Details and PDF */}
+              <div className="flex-1 overflow-auto p-8 border-r border-border flex flex-col">
                 <div className="mb-6">
                   <Button
                     variant="ghost"
@@ -191,12 +191,22 @@ export default function ContratsPage() {
                     ← Retour à la liste
                   </Button>
                   <h2 className="text-3xl font-bold text-foreground mb-2">
-                    {selectedContrat.numero}
+                    {selectedContrat.titre || selectedContrat.numero}
                   </h2>
                   <p className="text-muted-foreground">{getClientName(selectedContrat.clientId)}</p>
                 </div>
 
-                <div className="space-y-6">
+                {/* Tabs for Details and PDF */}
+                <div className="flex gap-4 mb-6 border-b border-border">
+                  <button className="px-4 py-2 border-b-2 border-primary text-primary font-medium">
+                    Détails
+                  </button>
+                  <button className="px-4 py-2 text-muted-foreground font-medium hover:text-foreground">
+                    Prévisualisation PDF
+                  </button>
+                </div>
+
+                <div className="space-y-6 flex-1">
                   <Card>
                     <CardHeader>
                       <CardTitle>Informations Générales</CardTitle>
@@ -228,6 +238,12 @@ export default function ContratsPage() {
                           </p>
                         </div>
                       </div>
+                      {selectedContrat.description && (
+                        <div className="mt-4 pt-4 border-t border-border">
+                          <p className="text-sm text-muted-foreground">Description</p>
+                          <p className="text-sm text-foreground mt-2">{selectedContrat.description}</p>
+                        </div>
+                      )}
                     </CardContent>
                   </Card>
 
