@@ -11,16 +11,17 @@ import { useContrats } from '@/contexts/contracts-context';
 import { useRouter } from 'next/navigation';
 
 export default function AddContractPage() {
-  const { addContrat } = useContrats();
+  const { addContrat, clients } = useContrats();
   const router = useRouter();
   
   const [formData, setFormData] = useState({
     titre: '',
-    client: '',
+    clientId: '',
     type: 'Service',
     debut: '',
     fin: '',
     montant: '',
+    currency: 'EUR',
     description: '',
   });
 
@@ -44,14 +45,21 @@ export default function AddContractPage() {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     
+    if (!formData.clientId) {
+      alert('Veuillez sélectionner un client');
+      return;
+    }
+
     addContrat({
-      client: formData.client,
+      clientId: parseInt(formData.clientId),
       type: formData.type,
       debut: formData.debut,
       fin: formData.fin,
       montant: formData.montant,
+      currency: formData.currency,
       titre: formData.titre,
       description: formData.description,
+      file: file?.name,
     });
 
     router.push('/contrats');
@@ -95,14 +103,20 @@ export default function AddContractPage() {
                       <label className="text-sm font-medium text-foreground">
                         Client
                       </label>
-                      <Input
-                        name="client"
-                        value={formData.client}
+                      <select
+                        name="clientId"
+                        value={formData.clientId}
                         onChange={handleChange}
-                        placeholder="Nom du client"
-                        className="mt-2"
+                        className="mt-2 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary w-full"
                         required
-                      />
+                      >
+                        <option value="">Sélectionner un client</option>
+                        {clients.map((client) => (
+                          <option key={client.id} value={client.id}>
+                            {client.name}
+                          </option>
+                        ))}
+                      </select>
                     </div>
                     <div>
                       <label className="text-sm font-medium text-foreground">
@@ -153,19 +167,40 @@ export default function AddContractPage() {
                   </div>
 
                   {/* Montant */}
-                  <div>
-                    <label className="text-sm font-medium text-foreground">
-                      Montant (€)
-                    </label>
-                    <Input
-                      type="number"
-                      name="montant"
-                      value={formData.montant}
-                      onChange={handleChange}
-                      placeholder="50000"
-                      className="mt-2"
-                      required
-                    />
+                    <div>
+                      <label className="text-sm font-medium text-foreground">
+                        Montant
+                      </label>
+                      <Input
+                        name="montant"
+                        value={formData.montant}
+                        onChange={handleChange}
+                        placeholder="Ex: 50000"
+                        type="number"
+                        className="mt-2"
+                        required
+                      />
+                    </div>
+                  </div>
+
+                  {/* Montant et Devise */}
+                  <div className="grid grid-cols-2 gap-4">
+                    <div>
+                      <label className="text-sm font-medium text-foreground">
+                        Devise
+                      </label>
+                      <select
+                        name="currency"
+                        value={formData.currency}
+                        onChange={handleChange}
+                        className="mt-2 px-3 py-2 border border-border rounded-md bg-background text-foreground focus:outline-none focus:ring-2 focus:ring-primary w-full"
+                      >
+                        <option value="EUR">EUR</option>
+                        <option value="USD">USD</option>
+                        <option value="GBP">GBP</option>
+                      </select>
+                    </div>
+                    <div />
                   </div>
 
                   {/* Description */}

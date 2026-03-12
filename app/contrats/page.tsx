@@ -10,65 +10,6 @@ import { Edit2, Eye, Trash2, Plus, Filter, X, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useContrats } from '@/contexts/contracts-context';
 
-const staticContrats = [
-  {
-    id: 1,
-    numero: 'CTR-2024-001',
-    client: 'Entreprise ABC',
-    type: 'Service',
-    debut: '2024-01-15',
-    fin: '2025-01-15',
-    montant: '50,000 €',
-    statut: 'Actif',
-  },
-  {
-    id: 2,
-    numero: 'CTR-2024-002',
-    client: 'Société XYZ',
-    type: 'Fourniture',
-    debut: '2024-02-01',
-    fin: '2024-12-31',
-    montant: '75,000 €',
-    statut: 'Actif',
-  },
-  {
-    id: 3,
-    numero: 'CTR-2024-003',
-    client: 'Client DEF',
-    type: 'Consultation',
-    debut: '2023-06-01',
-    fin: '2024-05-31',
-    montant: '25,000 €',
-    statut: 'Expiré',
-  },
-  {
-    id: 4,
-    numero: 'CTR-2024-004',
-    client: 'Partenaire GHI',
-    type: 'Service',
-    debut: '2024-04-10',
-    fin: '2024-10-10',
-    montant: '60,000 €',
-    statut: 'En Attente',
-  },
-  {
-    id: 5,
-    numero: 'CTR-2024-005',
-    client: 'Client JKL',
-    type: 'Maintenance',
-    debut: '2024-03-15',
-    fin: '2025-03-15',
-    montant: '40,000 €',
-    statut: 'Actif',
-  },
-];
-
-const statutColors = {
-  Actif: 'bg-secondary/10 text-secondary',
-  Expiré: 'bg-destructive/10 text-destructive',
-  'En Attente': 'bg-accent/10 text-accent',
-};
-
 const sampleMessages = [
   { id: 1, role: 'user', content: 'Quelle est la date d\'expiration de ce contrat ?' },
   {
@@ -87,7 +28,7 @@ const sampleMessages = [
 ];
 
 export default function ContratsPage() {
-  const { contrats, deleteContrat } = useContrats();
+  const { contrats, deleteContrat, getClientName } = useContrats();
   const [selectedContrat, setSelectedContrat] = useState<typeof contrats[0] | null>(null);
   const [messages, setMessages] = useState(sampleMessages);
   const [inputValue, setInputValue] = useState('');
@@ -182,9 +123,6 @@ export default function ContratsPage() {
                             Montant
                           </th>
                           <th className="text-left py-4 px-4 font-semibold text-foreground">
-                            Statut
-                          </th>
-                          <th className="text-left py-4 px-4 font-semibold text-foreground">
                             Actions
                           </th>
                         </tr>
@@ -199,7 +137,7 @@ export default function ContratsPage() {
                             <td className="py-4 px-4 font-medium text-foreground">
                               {contrat.numero}
                             </td>
-                            <td className="py-4 px-4 text-foreground">{contrat.client}</td>
+                            <td className="py-4 px-4 text-foreground">{getClientName(contrat.clientId)}</td>
                             <td className="py-4 px-4 text-foreground">{contrat.type}</td>
                             <td className="py-4 px-4 text-muted-foreground">
                               {new Date(contrat.debut).toLocaleDateString('fr-FR')}
@@ -208,18 +146,7 @@ export default function ContratsPage() {
                               {new Date(contrat.fin).toLocaleDateString('fr-FR')}
                             </td>
                             <td className="py-4 px-4 font-medium text-foreground">
-                              {contrat.montant}
-                            </td>
-                            <td className="py-4 px-4">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  statutColors[
-                                    contrat.statut as keyof typeof statutColors
-                                  ] || 'bg-muted text-muted-foreground'
-                                }`}
-                              >
-                                {contrat.statut}
-                              </span>
+                              {contrat.montant} {contrat.currency || 'EUR'}
                             </td>
                             <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
                               <div className="flex gap-2">
@@ -266,7 +193,7 @@ export default function ContratsPage() {
                   <h2 className="text-3xl font-bold text-foreground mb-2">
                     {selectedContrat.numero}
                   </h2>
-                  <p className="text-muted-foreground">{selectedContrat.client}</p>
+                  <p className="text-muted-foreground">{getClientName(selectedContrat.clientId)}</p>
                 </div>
 
                 <div className="space-y-6">
@@ -285,7 +212,7 @@ export default function ContratsPage() {
                         <div>
                           <p className="text-sm text-muted-foreground">Montant</p>
                           <p className="text-lg font-semibold text-foreground">
-                            {selectedContrat.montant}
+                            {selectedContrat.montant} {selectedContrat.currency || 'EUR'}
                           </p>
                         </div>
                         <div>
@@ -299,20 +226,6 @@ export default function ContratsPage() {
                           <p className="text-lg font-semibold text-foreground">
                             {new Date(selectedContrat.fin).toLocaleDateString('fr-FR')}
                           </p>
-                        </div>
-                      </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Statut</p>
-                        <div className="mt-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              statutColors[
-                                selectedContrat.statut as keyof typeof statutColors
-                              ] || 'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {selectedContrat.statut}
-                          </span>
                         </div>
                       </div>
                     </CardContent>

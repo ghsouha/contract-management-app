@@ -2,73 +2,123 @@
 
 import React, { createContext, useContext, useState, useCallback } from 'react';
 
+export interface Client {
+  id: number;
+  name: string;
+  email: string;
+  phone: string;
+  address: string;
+  siret: string;
+}
+
 export interface Contrat {
   id: number;
   numero: string;
-  client: string;
+  clientId: number;
   type: string;
   debut: string;
   fin: string;
   montant: string;
-  statut: string;
   titre?: string;
   description?: string;
+  currency?: string;
+  file?: string;
 }
 
 interface ContratsContextType {
   contrats: Contrat[];
-  addContrat: (contrat: Omit<Contrat, 'id' | 'numero' | 'statut'>) => void;
+  clients: Client[];
+  addContrat: (contrat: Omit<Contrat, 'id' | 'numero'>) => void;
   updateContrat: (id: number, contrat: Partial<Contrat>) => void;
   deleteContrat: (id: number) => void;
   getContratById: (id: number) => Contrat | undefined;
+  addClient: (client: Omit<Client, 'id'>) => void;
+  updateClient: (id: number, client: Partial<Client>) => void;
+  deleteClient: (id: number) => void;
+  getClientName: (clientId: number) => string;
 }
 
 const ContratsContext = createContext<ContratsContextType | undefined>(undefined);
+
+const initialClients: Client[] = [
+  {
+    id: 1,
+    name: 'Entreprise ABC',
+    email: 'contact@entrepriseabc.com',
+    phone: '0123456789',
+    address: '123 Rue de Paris',
+    siret: '12345678901234',
+  },
+  {
+    id: 2,
+    name: 'Techno Solutions',
+    email: 'contact@technos.com',
+    phone: '0987654321',
+    address: '456 Avenue du Tech',
+    siret: '98765432109876',
+  },
+  {
+    id: 3,
+    name: 'Digital Consulting',
+    email: 'contact@digitalconsult.com',
+    phone: '0456789123',
+    address: '789 Boulevard Digital',
+    siret: '45678912345678',
+  },
+  {
+    id: 4,
+    name: 'CloudFirst Pro',
+    email: 'contact@cloudfirst.com',
+    phone: '0789123456',
+    address: '321 Rue Cloud',
+    siret: '78912345678901',
+  },
+];
 
 const initialContrats: Contrat[] = [
   {
     id: 1,
     numero: 'CTR-2024-001',
-    client: 'Entreprise ABC',
+    clientId: 1,
     type: 'Service',
     debut: '2024-01-15',
     fin: '2025-01-15',
-    montant: '50,000 €',
-    statut: 'Actif',
+    montant: '50000',
+    currency: 'EUR',
     titre: 'Contrat de Services Informatiques',
     description: 'Contrat de fourniture de services informatiques incluant maintenance, support technique et mise à jour des systèmes.',
   },
   {
     id: 2,
     numero: 'CTR-2024-002',
-    client: 'Techno Solutions',
+    clientId: 2,
     type: 'Fourniture',
     debut: '2024-02-01',
     fin: '2024-12-31',
-    montant: '35,000 €',
-    statut: 'Actif',
+    montant: '35000',
+    currency: 'EUR',
     titre: 'Fourniture de Matériel Informatique',
   },
   {
     id: 3,
     numero: 'CTR-2024-003',
-    client: 'Digital Consulting',
+    clientId: 3,
     type: 'Consultation',
     debut: '2023-06-15',
     fin: '2024-06-15',
-    montant: '25,000 €',
-    statut: 'Expiré',
+    montant: '25000',
+    currency: 'EUR',
     titre: 'Services de Consultation',
   },
   {
     id: 4,
     numero: 'CTR-2024-004',
-    client: 'CloudFirst Pro',
+    clientId: 4,
     type: 'Maintenance',
     debut: '2024-03-01',
     fin: '2025-03-01',
-    montant: '18,000 €',
-    statut: 'En Attente',
+    montant: '18000',
+    currency: 'EUR',
     titre: 'Contrat de Maintenance',
   },
 ];
@@ -77,24 +127,25 @@ export const ContratsProvider: React.FC<{ children: React.ReactNode }> = ({
   children,
 }) => {
   const [contrats, setContrats] = useState<Contrat[]>(initialContrats);
-  const [nextId, setNextId] = useState(5);
+  const [clients, setClients] = useState<Client[]>(initialClients);
+  const [nextContratId, setNextContratId] = useState(5);
+  const [nextClientId, setNextClientId] = useState(5);
 
   const addContrat = useCallback(
-    (newContrat: Omit<Contrat, 'id' | 'numero' | 'statut'>) => {
-      const id = nextId;
+    (newContrat: Omit<Contrat, 'id' | 'numero'>) => {
+      const id = nextContratId;
       const numero = `CTR-${new Date().getFullYear()}-${String(id).padStart(3, '0')}`;
       
       const contrat: Contrat = {
         ...newContrat,
         id,
         numero,
-        statut: 'Actif',
       };
 
       setContrats((prev) => [...prev, contrat]);
-      setNextId((prev) => prev + 1);
+      setNextContratId((prev) => prev + 1);
     },
-    [nextId]
+    [nextContratId]
   );
 
   const updateContrat = useCallback((id: number, updatedData: Partial<Contrat>) => {
@@ -114,12 +165,51 @@ export const ContratsProvider: React.FC<{ children: React.ReactNode }> = ({
     [contrats]
   );
 
+  const addClient = useCallback(
+    (newClient: Omit<Client, 'id'>) => {
+      const id = nextClientId;
+      const client: Client = {
+        ...newClient,
+        id,
+      };
+
+      setClients((prev) => [...prev, client]);
+      setNextClientId((prev) => prev + 1);
+    },
+    [nextClientId]
+  );
+
+  const updateClient = useCallback((id: number, updatedData: Partial<Client>) => {
+    setClients((prev) =>
+      prev.map((client) =>
+        client.id === id ? { ...client, ...updatedData } : client
+      )
+    );
+  }, []);
+
+  const deleteClient = useCallback((id: number) => {
+    setClients((prev) => prev.filter((client) => client.id !== id));
+  }, []);
+
+  const getClientName = useCallback(
+    (clientId: number) => {
+      const client = clients.find((c) => c.id === clientId);
+      return client ? client.name : 'Client inconnu';
+    },
+    [clients]
+  );
+
   const value: ContratsContextType = {
     contrats,
+    clients,
     addContrat,
     updateContrat,
     deleteContrat,
     getContratById,
+    addClient,
+    updateClient,
+    deleteClient,
+    getClientName,
   };
 
   return (
