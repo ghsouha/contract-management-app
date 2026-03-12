@@ -9,6 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Edit2, Eye, Trash2, Plus, Filter, X, Send } from 'lucide-react';
 import Link from 'next/link';
 import { useContrats } from '@/contexts/contracts-context';
+import { FileText } from 'lucide-react';
 
 const sampleMessages = [
   { id: 1, role: 'user', content: 'Quelle est la date d\'expiration de ce contrat ?' },
@@ -32,6 +33,7 @@ export default function ContratsPage() {
   const [selectedContrat, setSelectedContrat] = useState<typeof contrats[0] | null>(null);
   const [messages, setMessages] = useState(sampleMessages);
   const [inputValue, setInputValue] = useState('');
+  const [activeTab, setActiveTab] = useState<'details' | 'pdf'>('details');
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -198,14 +200,30 @@ export default function ContratsPage() {
 
                 {/* Tabs for Details and PDF */}
                 <div className="flex gap-4 mb-6 border-b border-border">
-                  <button className="px-4 py-2 border-b-2 border-primary text-primary font-medium">
+                  <button 
+                    onClick={() => setActiveTab('details')}
+                    className={`px-4 py-2 border-b-2 font-medium transition-colors ${
+                      activeTab === 'details'
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
                     Détails
                   </button>
-                  <button className="px-4 py-2 text-muted-foreground font-medium hover:text-foreground">
+                  <button 
+                    onClick={() => setActiveTab('pdf')}
+                    className={`px-4 py-2 border-b-2 font-medium transition-colors ${
+                      activeTab === 'pdf'
+                        ? 'border-primary text-primary'
+                        : 'border-transparent text-muted-foreground hover:text-foreground'
+                    }`}
+                  >
                     Prévisualisation PDF
                   </button>
                 </div>
 
+                {/* Details Tab */}
+                {activeTab === 'details' && (
                 <div className="space-y-6 flex-1">
                   <Card>
                     <CardHeader>
@@ -261,6 +279,29 @@ export default function ContratsPage() {
                     </CardContent>
                   </Card>
                 </div>
+                )}
+
+                {/* PDF Tab */}
+                {activeTab === 'pdf' && (
+                <div className="flex-1 flex items-center justify-center bg-muted/30 rounded-lg border border-border">
+                  <div className="text-center space-y-4">
+                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
+                      <FileText size={32} className="text-primary" />
+                    </div>
+                    <div>
+                      <h3 className="text-lg font-semibold text-foreground mb-2">
+                        {selectedContrat.file || 'exemple_contrat_client.pdf'}
+                      </h3>
+                      <p className="text-sm text-muted-foreground mb-4">
+                        Taille: 2.4 MB | Type: PDF
+                      </p>
+                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
+                        Télécharger PDF
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+                )}
               </div>
 
               {/* Right Panel - Chatbot */}
