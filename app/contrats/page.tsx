@@ -244,123 +244,64 @@ export default function ContratsPage() {
                 </div>
               </div>
 
-              {/* Right Panel - Contract Details and PDF */}
-              <div className="flex-1 overflow-auto p-8 border-l border-border flex flex-col">
-                <div className="mb-6">
+              {/* Right Panel - PDF Viewer */}
+              <div className="flex-1 flex flex-col border-l border-border bg-background">
+                {/* PDF Header */}
+                <div className="p-4 border-b border-border flex items-center justify-between bg-card">
+                  <div>
+                    <h3 className="font-semibold text-foreground">{selectedContrat.titre || selectedContrat.numero}</h3>
+                    <p className="text-xs text-muted-foreground">{getClientName(selectedContrat.clientId)}</p>
+                  </div>
                   <Button
                     variant="ghost"
+                    size="sm"
                     onClick={() => setSelectedContrat(null)}
-                    className="mb-4"
                   >
-                    ← Retour à la liste
+                    <X size={18} />
                   </Button>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">
-                    {selectedContrat.titre || selectedContrat.numero}
-                  </h2>
-                  <p className="text-muted-foreground">{getClientName(selectedContrat.clientId)}</p>
                 </div>
 
-                {/* Tabs for Details and PDF */}
-                <div className="flex gap-4 mb-6 border-b border-border">
-                  <button 
-                    onClick={() => setActiveTab('details')}
-                    className={`px-4 py-2 border-b-2 font-medium transition-colors ${
-                      activeTab === 'details'
-                        ? 'border-primary text-primary'
-                        : 'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Détails
-                  </button>
-                  <button 
-                    onClick={() => setActiveTab('pdf')}
-                    className={`px-4 py-2 border-b-2 font-medium transition-colors ${
-                      activeTab === 'pdf'
-                        ? 'border-primary text-primary'
-                        : 'border-transparent text-muted-foreground hover:text-foreground'
-                    }`}
-                  >
-                    Prévisualisation PDF
-                  </button>
-                </div>
-
-                {/* Details Tab */}
-                {activeTab === 'details' ? (
-                <div className="space-y-6 flex-1 overflow-y-auto">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Informations Générales</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                {/* PDF Viewer */}
+                <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
+                  <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full space-y-4">
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+                        <FileText size={40} className="text-primary" />
+                      </div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-foreground text-center">
+                      {selectedContrat.file || 'exemple_contrat_client.pdf'}
+                    </h2>
+                    <p className="text-center text-muted-foreground">
+                      Type: PDF | Taille: 2.4 MB
+                    </p>
+                    <div className="border-t border-border pt-6 mt-6 space-y-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-sm text-muted-foreground">Type de Contrat</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {selectedContrat.type}
-                          </p>
+                          <p className="text-muted-foreground">Numéro</p>
+                          <p className="font-semibold text-foreground">{selectedContrat.numero}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Montant</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {selectedContrat.montant} {selectedContrat.currency || 'EUR'}
-                          </p>
+                          <p className="text-muted-foreground">Type</p>
+                          <p className="font-semibold text-foreground">{selectedContrat.type}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Date de Début</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {new Date(selectedContrat.debut).toLocaleDateString('fr-FR')}
-                          </p>
+                          <p className="text-muted-foreground">Montant</p>
+                          <p className="font-semibold text-foreground">{selectedContrat.montant} {selectedContrat.currency || 'EUR'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Date de Fin</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {new Date(selectedContrat.fin).toLocaleDateString('fr-FR')}
+                          <p className="text-muted-foreground">Validité</p>
+                          <p className="font-semibold text-foreground">
+                            {new Date(selectedContrat.debut).toLocaleDateString('fr-FR')} - {new Date(selectedContrat.fin).toLocaleDateString('fr-FR')}
                           </p>
                         </div>
                       </div>
-                      {selectedContrat.description && (
-                        <div className="mt-4 pt-4 border-t border-border">
-                          <p className="text-sm text-muted-foreground">Description</p>
-                          <p className="text-sm text-foreground mt-2">{selectedContrat.description}</p>
-                        </div>
-                      )}
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Conditions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2 text-sm text-foreground">
-                        <li>• Durée: 12 mois renouvelables</li>
-                        <li>• Clause de résiliation: 30 jours</li>
-                        <li>• Mode de paiement: Mensuel</li>
-                        <li>• Indexation: Possible</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
-                </div>
-                ) : (
-                <div className="flex-1 flex items-center justify-center bg-muted/30 rounded-lg border border-border">
-                  <div className="text-center space-y-4">
-                    <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
-                      <FileText size={32} className="text-primary" />
                     </div>
-                    <div>
-                      <h3 className="text-lg font-semibold text-foreground mb-2">
-                        {selectedContrat.file || 'exemple_contrat_client.pdf'}
-                      </h3>
-                      <p className="text-sm text-muted-foreground mb-4">
-                        Taille: 2.4 MB | Type: PDF
-                      </p>
-                      <Button className="bg-primary hover:bg-primary/90 text-primary-foreground">
-                        Télécharger PDF
-                      </Button>
-                    </div>
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-6">
+                      Télécharger PDF
+                    </Button>
                   </div>
                 </div>
-                )}
               </div>
             </div>
           )}
