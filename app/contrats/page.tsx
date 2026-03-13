@@ -35,6 +35,12 @@ export default function ContratsPage() {
   const [inputValue, setInputValue] = useState('');
   const [activeTab, setActiveTab] = useState<'details' | 'pdf'>('details');
 
+  // Reset to details tab when contract is selected
+  const handleSelectContrat = (contrat: typeof contrats[0]) => {
+    setSelectedContrat(contrat);
+    setActiveTab('details');
+  };
+
   const handleSendMessage = () => {
     if (inputValue.trim()) {
       const newUserMessage = {
@@ -134,7 +140,7 @@ export default function ContratsPage() {
                           <tr
                             key={contrat.id}
                             className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer"
-                            onClick={() => setSelectedContrat(contrat)}
+                            onClick={() => handleSelectContrat(contrat)}
                           >
                             <td className="py-4 px-4 font-medium text-foreground">
                               {contrat.numero}
