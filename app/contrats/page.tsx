@@ -229,8 +229,8 @@ export default function ContratsPage() {
                 </div>
 
                 {/* Details Tab */}
-                {activeTab === 'details' && (
-                <div className="space-y-6 flex-1">
+                {activeTab === 'details' ? (
+                <div className="space-y-6 flex-1 overflow-y-auto">
                   <Card>
                     <CardHeader>
                       <CardTitle>Informations Générales</CardTitle>
@@ -285,10 +285,7 @@ export default function ContratsPage() {
                     </CardContent>
                   </Card>
                 </div>
-                )}
-
-                {/* PDF Tab */}
-                {activeTab === 'pdf' && (
+                ) : (
                 <div className="flex-1 flex items-center justify-center bg-muted/30 rounded-lg border border-border">
                   <div className="text-center space-y-4">
                     <div className="w-16 h-16 bg-primary/10 rounded-full flex items-center justify-center mx-auto">
