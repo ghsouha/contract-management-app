@@ -22,56 +22,66 @@ export default function Dashboard() {
         <div className="p-8">
           {/* Statistics Cards */}
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/50 border-primary/20 hover:border-primary/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium">Total Contrats</CardTitle>
-                <FileText className="text-primary" size={20} />
+                <div className="p-2 bg-primary/20 rounded-lg">
+                  <FileText className="text-primary" size={20} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">42</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-primary to-accent bg-clip-text text-transparent">42</div>
                 <p className="text-xs text-muted-foreground mt-1">Tous les contrats</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/50 border-secondary/20 hover:border-secondary/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium">Contrats Actifs</CardTitle>
-                <TrendingUp className="text-secondary" size={20} />
+                <div className="p-2 bg-secondary/20 rounded-lg">
+                  <TrendingUp className="text-secondary" size={20} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">33</div>
+                <div className="text-3xl font-bold bg-gradient-to-r from-secondary to-primary bg-clip-text text-transparent">33</div>
                 <p className="text-xs text-muted-foreground mt-1">En cours</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/50 border-destructive/20 hover:border-destructive/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium">Contrats Expirés</CardTitle>
-                <AlertCircle className="text-destructive" size={20} />
+                <div className="p-2 bg-destructive/20 rounded-lg">
+                  <AlertCircle className="text-destructive" size={20} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">5</div>
+                <div className="text-3xl font-bold text-destructive">5</div>
                 <p className="text-xs text-muted-foreground mt-1">À renouveler</p>
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-gradient-to-br from-card to-card/50 border-accent/20 hover:border-accent/40">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-3">
                 <CardTitle className="text-sm font-medium">En Attente</CardTitle>
-                <Clock className="text-accent" size={20} />
+                <div className="p-2 bg-accent/20 rounded-lg">
+                  <Clock className="text-accent" size={20} />
+                </div>
               </CardHeader>
               <CardContent>
-                <div className="text-3xl font-bold">4</div>
+                <div className="text-3xl font-bold text-accent">4</div>
                 <p className="text-xs text-muted-foreground mt-1">Signature</p>
               </CardContent>
             </Card>
           </div>
 
           {/* Alerts Section */}
-          <Card>
+          <Card className="border-destructive/20">
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
-                <AlertCircle size={20} className="text-destructive" />
+                <div className="p-2 bg-destructive/20 rounded-lg">
+                  <AlertCircle size={20} className="text-destructive" />
+                </div>
                 Contrats Proches d&apos;Expiration
               </CardTitle>
             </CardHeader>
@@ -80,7 +90,7 @@ export default function Dashboard() {
                 {alertes.map((alerte) => (
                   <div
                     key={alerte.id}
-                    className="flex items-center justify-between p-4 rounded-lg bg-muted hover:bg-muted/80 transition-colors"
+                    className="flex items-center justify-between p-4 rounded-lg bg-muted/50 hover:bg-muted/80 border border-border/50 hover:border-border transition-all duration-200"
                   >
                     <div className="flex-1">
                       <p className="font-semibold text-foreground">{alerte.contrat}</p>
