@@ -7,7 +7,7 @@ import {
   FileText,
   Users,
   Settings,
-  LogOut,
+  Shield,
 } from 'lucide-react';
 import { cn } from '@/lib/utils';
 
@@ -18,6 +18,7 @@ export function Sidebar() {
     { href: '/', label: 'Dashboard', icon: LayoutDashboard },
     { href: '/contrats', label: 'Contrats', icon: FileText },
     { href: '/clients', label: 'Clients', icon: Users },
+    { href: '/users', label: 'Utilisateurs', icon: Shield },
     { href: '/settings', label: 'Paramètres', icon: Settings },
   ];
 

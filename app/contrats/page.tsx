@@ -188,8 +188,64 @@ export default function ContratsPage() {
           ) : (
             // Split View
             <div className="flex h-full gap-0">
-              {/* Left Panel - Contract Details and PDF */}
-              <div className="flex-1 overflow-auto p-8 border-r border-border flex flex-col">
+              {/* Left Panel - Chatbot */}
+              <div className="flex-1 flex flex-col bg-muted/30 border-r border-border">
+                {/* Chat Header */}
+                <div className="p-4 border-b border-border flex items-center justify-between bg-card">
+                  <h3 className="font-semibold text-foreground">Assistant IA</h3>
+                  <Button
+                    variant="ghost"
+                    size="sm"
+                    onClick={() => setSelectedContrat(null)}
+                  >
+                    <X size={18} />
+                  </Button>
+                </div>
+
+                {/* Chat Messages */}
+                <div className="flex-1 overflow-auto p-4 space-y-4">
+                  {messages.map((msg) => (
+                    <div
+                      key={msg.id}
+                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                    >
+                      <div
+                        className={`max-w-xs px-4 py-2 rounded-lg ${
+                          msg.role === 'user'
+                            ? 'bg-primary text-primary-foreground rounded-br-none'
+                            : 'bg-card border border-border text-foreground rounded-bl-none'
+                        }`}
+                      >
+                        <p className="text-sm">{msg.content}</p>
+                      </div>
+                    </div>
+                  ))}
+                </div>
+
+                {/* Chat Input */}
+                <div className="p-4 border-t border-border bg-card">
+                  <div className="flex gap-2">
+                    <Input
+                      placeholder="Posez une question sur le contrat..."
+                      value={inputValue}
+                      onChange={(e) => setInputValue(e.target.value)}
+                      onKeyPress={(e) =>
+                        e.key === 'Enter' && handleSendMessage()
+                      }
+                      className="flex-1"
+                    />
+                    <Button
+                      onClick={handleSendMessage}
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-4"
+                    >
+                      <Send size={18} />
+                    </Button>
+                  </div>
+                </div>
+              </div>
+
+              {/* Right Panel - Contract Details and PDF */}
+              <div className="flex-1 overflow-auto p-8 border-l border-border flex flex-col">
                 <div className="mb-6">
                   <Button
                     variant="ghost"
@@ -305,62 +361,6 @@ export default function ContratsPage() {
                   </div>
                 </div>
                 )}
-              </div>
-
-              {/* Right Panel - Chatbot */}
-              <div className="flex-1 flex flex-col bg-muted/30 border-l border-border">
-                {/* Chat Header */}
-                <div className="p-4 border-b border-border flex items-center justify-between bg-card">
-                  <h3 className="font-semibold text-foreground">Assistant IA</h3>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    onClick={() => setSelectedContrat(null)}
-                  >
-                    <X size={18} />
-                  </Button>
-                </div>
-
-                {/* Chat Messages */}
-                <div className="flex-1 overflow-auto p-4 space-y-4">
-                  {messages.map((msg) => (
-                    <div
-                      key={msg.id}
-                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
-                    >
-                      <div
-                        className={`max-w-xs px-4 py-2 rounded-lg ${
-                          msg.role === 'user'
-                            ? 'bg-primary text-primary-foreground rounded-br-none'
-                            : 'bg-card border border-border text-foreground rounded-bl-none'
-                        }`}
-                      >
-                        <p className="text-sm">{msg.content}</p>
-                      </div>
-                    </div>
-                  ))}
-                </div>
-
-                {/* Chat Input */}
-                <div className="p-4 border-t border-border bg-card">
-                  <div className="flex gap-2">
-                    <Input
-                      placeholder="Posez une question sur le contrat..."
-                      value={inputValue}
-                      onChange={(e) => setInputValue(e.target.value)}
-                      onKeyPress={(e) =>
-                        e.key === 'Enter' && handleSendMessage()
-                      }
-                      className="flex-1"
-                    />
-                    <Button
-                      onClick={handleSendMessage}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-4"
-                    >
-                      <Send size={18} />
-                    </Button>
-                  </div>
-                </div>
               </div>
             </div>
           )}
