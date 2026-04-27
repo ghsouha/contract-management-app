@@ -8,65 +8,8 @@ import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Edit2, Eye, Trash2, Plus, Filter, X, Send } from 'lucide-react';
 import Link from 'next/link';
-
-const contrats = [
-  {
-    id: 1,
-    numero: 'CTR-2024-001',
-    client: 'Entreprise ABC',
-    type: 'Service',
-    debut: '2024-01-15',
-    fin: '2025-01-15',
-    montant: '50,000 €',
-    statut: 'Actif',
-  },
-  {
-    id: 2,
-    numero: 'CTR-2024-002',
-    client: 'Société XYZ',
-    type: 'Fourniture',
-    debut: '2024-02-01',
-    fin: '2024-12-31',
-    montant: '75,000 €',
-    statut: 'Actif',
-  },
-  {
-    id: 3,
-    numero: 'CTR-2024-003',
-    client: 'Client DEF',
-    type: 'Consultation',
-    debut: '2023-06-01',
-    fin: '2024-05-31',
-    montant: '25,000 €',
-    statut: 'Expiré',
-  },
-  {
-    id: 4,
-    numero: 'CTR-2024-004',
-    client: 'Partenaire GHI',
-    type: 'Service',
-    debut: '2024-04-10',
-    fin: '2024-10-10',
-    montant: '60,000 €',
-    statut: 'En Attente',
-  },
-  {
-    id: 5,
-    numero: 'CTR-2024-005',
-    client: 'Client JKL',
-    type: 'Maintenance',
-    debut: '2024-03-15',
-    fin: '2025-03-15',
-    montant: '40,000 €',
-    statut: 'Actif',
-  },
-];
-
-const statutColors = {
-  Actif: 'bg-secondary/10 text-secondary',
-  Expiré: 'bg-destructive/10 text-destructive',
-  'En Attente': 'bg-accent/10 text-accent',
-};
+import { useContrats } from '@/contexts/contracts-context';
+import { FileText } from 'lucide-react';
 
 const sampleMessages = [
   { id: 1, role: 'user', content: 'Quelle est la date d\'expiration de ce contrat ?' },
@@ -86,9 +29,17 @@ const sampleMessages = [
 ];
 
 export default function ContratsPage() {
-  const [selectedContrat, setSelectedContrat] = useState<(typeof contrats)[0] | null>(null);
+  const { contrats, deleteContrat, getClientName } = useContrats();
+  const [selectedContrat, setSelectedContrat] = useState<typeof contrats[0] | null>(null);
   const [messages, setMessages] = useState(sampleMessages);
   const [inputValue, setInputValue] = useState('');
+  const [activeTab, setActiveTab] = useState<'details' | 'pdf'>('details');
+
+  // Reset to details tab when contract is selected
+  const handleSelectContrat = (contrat: typeof contrats[0]) => {
+    setSelectedContrat(contrat);
+    setActiveTab('details');
+  };
 
   const handleSendMessage = () => {
     if (inputValue.trim()) {
@@ -112,6 +63,13 @@ export default function ContratsPage() {
       }, 500);
 
       setInputValue('');
+    }
+  };
+
+  const handleDeleteContrat = (id: number) => {
+    if (confirm('Êtes-vous sûr de vouloir supprimer ce contrat ?')) {
+      deleteContrat(id);
+      setSelectedContrat(null);
     }
   };
 
@@ -173,9 +131,6 @@ export default function ContratsPage() {
                             Montant
                           </th>
                           <th className="text-left py-4 px-4 font-semibold text-foreground">
-                            Statut
-                          </th>
-                          <th className="text-left py-4 px-4 font-semibold text-foreground">
                             Actions
                           </th>
                         </tr>
@@ -185,12 +140,12 @@ export default function ContratsPage() {
                           <tr
                             key={contrat.id}
                             className="border-b border-border hover:bg-muted/50 transition-colors cursor-pointer"
-                            onClick={() => setSelectedContrat(contrat)}
+                            onClick={() => handleSelectContrat(contrat)}
                           >
                             <td className="py-4 px-4 font-medium text-foreground">
                               {contrat.numero}
                             </td>
-                            <td className="py-4 px-4 text-foreground">{contrat.client}</td>
+                            <td className="py-4 px-4 text-foreground">{getClientName(contrat.clientId)}</td>
                             <td className="py-4 px-4 text-foreground">{contrat.type}</td>
                             <td className="py-4 px-4 text-muted-foreground">
                               {new Date(contrat.debut).toLocaleDateString('fr-FR')}
@@ -199,32 +154,24 @@ export default function ContratsPage() {
                               {new Date(contrat.fin).toLocaleDateString('fr-FR')}
                             </td>
                             <td className="py-4 px-4 font-medium text-foreground">
-                              {contrat.montant}
-                            </td>
-                            <td className="py-4 px-4">
-                              <span
-                                className={`px-3 py-1 rounded-full text-xs font-medium ${
-                                  statutColors[
-                                    contrat.statut as keyof typeof statutColors
-                                  ] || 'bg-muted text-muted-foreground'
-                                }`}
-                              >
-                                {contrat.statut}
-                              </span>
+                              {contrat.montant} {contrat.currency || 'EUR'}
                             </td>
                             <td className="py-4 px-4" onClick={(e) => e.stopPropagation()}>
                               <div className="flex gap-2">
-                                <Button
-                                  variant="ghost"
-                                  size="sm"
-                                  className="hover:bg-primary/10 hover:text-primary"
-                                >
-                                  <Edit2 size={16} />
-                                </Button>
+                                <Link href={`/contrats/${contrat.id}/edit`}>
+                                  <Button
+                                    variant="ghost"
+                                    size="sm"
+                                    className="hover:bg-primary/10 hover:text-primary"
+                                  >
+                                    <Edit2 size={16} />
+                                  </Button>
+                                </Link>
                                 <Button
                                   variant="ghost"
                                   size="sm"
                                   className="hover:bg-destructive/10 hover:text-destructive"
+                                  onClick={() => handleDeleteContrat(contrat.id)}
                                 >
                                   <Trash2 size={16} />
                                 </Button>
@@ -241,89 +188,68 @@ export default function ContratsPage() {
           ) : (
             // Split View
             <div className="flex h-full gap-0">
-              {/* Left Panel - Contract Details */}
-              <div className="flex-1 overflow-auto p-8 border-r border-border">
-                <div className="mb-6">
+              {/* Left Panel - PDF Viewer */}
+              <div className="flex-1 flex flex-col border-r border-border bg-background animate-slide-in-left">
+                {/* PDF Header */}
+                <div className="p-4 border-b border-border flex items-center justify-between bg-card">
+                  <div>
+                    <h3 className="font-semibold text-foreground">{selectedContrat.titre || selectedContrat.numero}</h3>
+                    <p className="text-xs text-muted-foreground">{getClientName(selectedContrat.clientId)}</p>
+                  </div>
                   <Button
                     variant="ghost"
+                    size="sm"
                     onClick={() => setSelectedContrat(null)}
-                    className="mb-4"
                   >
-                    ← Retour à la liste
+                    <X size={18} />
                   </Button>
-                  <h2 className="text-3xl font-bold text-foreground mb-2">
-                    {selectedContrat.numero}
-                  </h2>
-                  <p className="text-muted-foreground">{selectedContrat.client}</p>
                 </div>
 
-                <div className="space-y-6">
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Informations Générales</CardTitle>
-                    </CardHeader>
-                    <CardContent className="space-y-4">
-                      <div className="grid grid-cols-2 gap-4">
+                {/* PDF Viewer */}
+                <div className="flex-1 flex items-center justify-center p-8 overflow-auto">
+                  <div className="bg-white rounded-lg shadow-lg p-8 max-w-2xl w-full space-y-4 animate-scale-in">
+                    <div className="flex items-center justify-center mb-6">
+                      <div className="w-20 h-20 bg-primary/10 rounded-full flex items-center justify-center">
+                        <FileText size={40} className="text-primary" />
+                      </div>
+                    </div>
+                    <h2 className="text-2xl font-bold text-foreground text-center">
+                      {selectedContrat.file || 'exemple_contrat_client.pdf'}
+                    </h2>
+                    <p className="text-center text-muted-foreground">
+                      Type: PDF | Taille: 2.4 MB
+                    </p>
+                    <div className="border-t border-border pt-6 mt-6 space-y-3">
+                      <div className="grid grid-cols-2 gap-4 text-sm">
                         <div>
-                          <p className="text-sm text-muted-foreground">Type de Contrat</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {selectedContrat.type}
-                          </p>
+                          <p className="text-muted-foreground">Numéro</p>
+                          <p className="font-semibold text-foreground">{selectedContrat.numero}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Montant</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {selectedContrat.montant}
-                          </p>
+                          <p className="text-muted-foreground">Type</p>
+                          <p className="font-semibold text-foreground">{selectedContrat.type}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Date de Début</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {new Date(selectedContrat.debut).toLocaleDateString('fr-FR')}
-                          </p>
+                          <p className="text-muted-foreground">Montant</p>
+                          <p className="font-semibold text-foreground">{selectedContrat.montant} {selectedContrat.currency || 'EUR'}</p>
                         </div>
                         <div>
-                          <p className="text-sm text-muted-foreground">Date de Fin</p>
-                          <p className="text-lg font-semibold text-foreground">
-                            {new Date(selectedContrat.fin).toLocaleDateString('fr-FR')}
+                          <p className="text-muted-foreground">Validité</p>
+                          <p className="font-semibold text-foreground">
+                            {new Date(selectedContrat.debut).toLocaleDateString('fr-FR')} - {new Date(selectedContrat.fin).toLocaleDateString('fr-FR')}
                           </p>
                         </div>
                       </div>
-                      <div>
-                        <p className="text-sm text-muted-foreground">Statut</p>
-                        <div className="mt-2">
-                          <span
-                            className={`px-3 py-1 rounded-full text-xs font-medium ${
-                              statutColors[
-                                selectedContrat.statut as keyof typeof statutColors
-                              ] || 'bg-muted text-muted-foreground'
-                            }`}
-                          >
-                            {selectedContrat.statut}
-                          </span>
-                        </div>
-                      </div>
-                    </CardContent>
-                  </Card>
-
-                  <Card>
-                    <CardHeader>
-                      <CardTitle>Conditions</CardTitle>
-                    </CardHeader>
-                    <CardContent>
-                      <ul className="space-y-2 text-sm text-foreground">
-                        <li>• Durée: 12 mois renouvelables</li>
-                        <li>• Clause de résiliation: 30 jours</li>
-                        <li>• Mode de paiement: Mensuel</li>
-                        <li>• Indexation: Possible</li>
-                      </ul>
-                    </CardContent>
-                  </Card>
+                    </div>
+                    <Button className="w-full bg-primary hover:bg-primary/90 text-primary-foreground mt-6">
+                      Télécharger PDF
+                    </Button>
+                  </div>
                 </div>
               </div>
 
               {/* Right Panel - Chatbot */}
-              <div className="flex-1 flex flex-col bg-muted/30 border-l border-border">
+              <div className="flex-1 flex flex-col bg-muted/30 border-l border-border animate-slide-in-right">
                 {/* Chat Header */}
                 <div className="p-4 border-b border-border flex items-center justify-between bg-card">
                   <h3 className="font-semibold text-foreground">Assistant IA</h3>
@@ -338,16 +264,17 @@ export default function ContratsPage() {
 
                 {/* Chat Messages */}
                 <div className="flex-1 overflow-auto p-4 space-y-4">
-                  {messages.map((msg) => (
+                  {messages.map((msg, index) => (
                     <div
                       key={msg.id}
-                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'}`}
+                      className={`flex ${msg.role === 'user' ? 'justify-end' : 'justify-start'} animate-slide-up`}
+                      style={{ animationDelay: `${index * 0.05}s` }}
                     >
                       <div
-                        className={`max-w-xs px-4 py-2 rounded-lg ${
+                        className={`max-w-xs px-4 py-2 rounded-lg transition-all duration-300 ${
                           msg.role === 'user'
-                            ? 'bg-primary text-primary-foreground rounded-br-none'
-                            : 'bg-card border border-border text-foreground rounded-bl-none'
+                            ? 'bg-primary text-primary-foreground rounded-br-none hover:shadow-md'
+                            : 'bg-card border border-border text-foreground rounded-bl-none hover:border-primary/50'
                         }`}
                       >
                         <p className="text-sm">{msg.content}</p>
@@ -366,11 +293,11 @@ export default function ContratsPage() {
                       onKeyPress={(e) =>
                         e.key === 'Enter' && handleSendMessage()
                       }
-                      className="flex-1"
+                      className="flex-1 transition-all duration-200 focus:border-primary"
                     />
                     <Button
                       onClick={handleSendMessage}
-                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-4"
+                      className="bg-primary hover:bg-primary/90 text-primary-foreground px-4 transition-all duration-200 hover:shadow-lg"
                     >
                       <Send size={18} />
                     </Button>

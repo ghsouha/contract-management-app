@@ -20,11 +20,7 @@ export default function SettingsPage() {
     nouveauMdp: '',
     confirmMdp: '',
   });
-  const [aiSettings, setAiSettings] = useState({
-    chatbotActif: true,
-    suggestionsActives: true,
-    notificationsIA: true,
-  });
+
 
   const handleProfileChange = (
     e: React.ChangeEvent<HTMLInputElement>
@@ -38,10 +34,6 @@ export default function SettingsPage() {
   ) => {
     const { name, value } = e.target;
     setPasswordData((prev) => ({ ...prev, [name]: value }));
-  };
-
-  const toggleAISetting = (key: keyof typeof aiSettings) => {
-    setAiSettings((prev) => ({ ...prev, [key]: !prev[key] }));
   };
 
   const handleSaveProfile = () => {
@@ -88,17 +80,7 @@ export default function SettingsPage() {
                 <Lock className="inline mr-2" size={16} />
                 Sécurité
               </button>
-              <button
-                onClick={() => setActiveTab('ai')}
-                className={`pb-3 px-2 font-medium text-sm transition-colors ${
-                  activeTab === 'ai'
-                    ? 'text-primary border-b-2 border-primary'
-                    : 'text-muted-foreground hover:text-foreground'
-                }`}
-              >
-                <Zap className="inline mr-2" size={16} />
-                Assistant IA
-              </button>
+
             </div>
 
             {/* Profile Tab */}
